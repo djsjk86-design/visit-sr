@@ -107,7 +107,6 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
-            z-index: 2;
         }
 
         .box-label {
@@ -162,6 +161,7 @@
             background: #e03d4b;
         }
 
+        /* 저장 중 로딩 및 완료 화면 스타일 */
         .overlay {
             display: none;
             position: absolute;
@@ -241,54 +241,37 @@
                 <input type="tel" id="userPhone" name="userPhone" class="input-control" placeholder="010-1234-5678" required>
             </div>
 
+            <!-- ▼▼▼ 5번 문항: 수정된 부분 ▼▼▼ -->
             <div class="form-group">
-                <label>5. 오늘 어떤 상담을 진행하시나요?</label>
+                <label>5. 방문 전 예약을 진행해 주셨나요?</label>
+                
+                <!-- [1단계] 예약 유무 선택 -->
                 <div class="radio-grid">
                     <div class="selectable-box">
-                        <input type="radio" name="consultType" value="신규상담" onclick="toggleConsultInput('new')" required>
-                        <span class="box-label">🔴 처음 방문했어요 (신규)</span>
+                        <input type="radio" name="reservationStatus" value="예약 없이 방문" onclick="toggleReservation(false)" required>
+                        <span class="box-label">🚶‍♂️ 예약 없이 방문했어요</span>
                     </div>
                     <div class="selectable-box">
-                        <input type="radio" name="consultType" value="재등록상담" onclick="toggleConsultInput('re')">
-                        <span class="box-label">🔵 기존 회원이에요 (재등록)</span>
+                        <input type="radio" name="reservationStatus" value="예약 후 방문" onclick="toggleReservation(true)">
+                        <span class="box-label">📅 예약 후 방문했어요</span>
                     </div>
                 </div>
 
-                <div class="search-detail" id="newConsultBox" style="margin-top: 12px;">
-                    <div class="radio-grid">
-                        <div class="selectable-box">
-                            <input type="radio" name="newType" value="미예약방문" onclick="toggleNewReserveInput(false)">
-                            <span class="box-label" style="padding:12px; font-size:14px;">🙋‍♂️ 예약 없이 방문</span>
-                        </div>
-                        <div class="selectable-box">
-                            <input type="radio" name="newType" value="예약방문" id="newReserveRadio" onclick="toggleNewReserveInput(true)">
-                            <span class="box-label" style="padding:12px; font-size:14px;">📅 예약 후 방문</span>
-                        </div>
+                <!-- [2단계] 예약 후 방문 선택 시 나타나는 예약 경로 -->
+                <div class="search-detail" id="reservationPathBox" style="margin-top: 12px; padding-left: 0;">
+                    <div class="time-grid" style="gap: 8px;">
+                        <div class="selectable-box"><input type="radio" name="reservePath" value="네이버예약"><span class="box-label" style="padding:12px; font-size:13px;">네이버예약</span></div>
+                        <div class="selectable-box"><input type="radio" name="reservePath" value="톡톡예약"><span class="box-label" style="padding:12px; font-size:13px;">톡톡예약</span></div>
+                        <div class="selectable-box"><input type="radio" name="reservePath" value="전화예약"><span class="box-label" style="padding:12px; font-size:13px;">전화예약</span></div>
+                        <div class="selectable-box"><input type="radio" name="reservePath" value="카톡예약"><span class="box-label" style="padding:12px; font-size:13px;">카톡 예약</span></div>
+                        <div class="selectable-box" style="grid-column: span 2;"><input type="radio" name="reservePath" value="기타" id="reserveEtcRadio"><span class="box-label" style="padding:12px; font-size:13px;">기타 예약 경로</span></div>
                     </div>
                     
-                    <div class="search-detail" id="newReserveDetailBox" style="margin-top: 12px; padding-left: 0;">
-                        <div class="time-grid" style="gap: 8px;">
-                            <div class="selectable-box"><input type="radio" name="newReservePath" value="네이버예약"><span class="box-label" style="padding:12px; font-size:13px;">네이버예약</span></div>
-                            <div class="selectable-box"><input type="radio" name="newReservePath" value="톡톡예약"><span class="box-label" style="padding:12px; font-size:13px;">톡톡예약</span></div>
-                            <div class="selectable-box"><input type="radio" name="newReservePath" value="전화예약"><span class="box-label" style="padding:12px; font-size:13px;">전화예약</span></div>
-                            <div class="selectable-box"><input type="radio" name="newReservePath" value="카톡예약"><span class="box-label" style="padding:12px; font-size:13px;">카톡 예약</span></div>
-                            <div class="selectable-box" style="grid-column: span 2;"><input type="radio" name="newReservePath" value="기타" id="newReserveEtcRadio"><span class="box-label" style="padding:12px; font-size:13px;">기타 예약 경로</span></div>
-                        </div>
-                        <input type="text" id="newReserveEtcInput" class="input-control" placeholder="예약 경로를 직접 입력해주세요" style="padding:12px; font-size:14px; display:none; margin-top:8px;">
-                    </div>
-                </div>
-
-                <div class="search-detail" id="reConsultBox" style="margin-top: 12px; padding-left: 0;">
-                    <div class="path-list">
-                        <div class="selectable-box"><input type="radio" name="rePath" value="재등록 안내전화"><span class="box-label" style="padding:12px; font-size:14px;">📞 재등록 안내 전화를 받고 왔어요</span></div>
-                        <div class="selectable-box"><input type="radio" name="rePath" value="재등록 안내문자"><span class="box-label" style="padding:12px; font-size:14px;">💬 재등록 안내 문자를 받고 왔어요</span></div>
-                        <div class="selectable-box"><input type="radio" name="rePath" value="안내없이 방문"><span class="box-label" style="padding:12px; font-size:14px;">🚶‍♂️ 안내 없이 그냥 방문했어요</span></div>
-                        <div class="selectable-box"><input type="radio" name="rePath" value="회원권 만료 후 재방문"><span class="box-label" style="padding:12px; font-size:14px;">⏱️ 회원권 만료 후 다시 찾아왔어요</span></div>
-                        <div class="selectable-box"><input type="radio" name="rePath" value="기타" id="reEtcRadio"><span class="box-label" style="padding:12px; font-size:14px;">📝 기타</span></div>
-                    </div>
-                    <input type="text" id="reEtcInput" class="input-control" placeholder="내용을 직접 입력해주세요" style="padding:12px; font-size:14px; display:none; margin-top:8px;">
+                    <!-- [3단계] 기타 선택 시 나타나는 직접 입력 창 -->
+                    <input type="text" id="reserveEtcInput" name="reserveEtcInput" class="input-control" placeholder="예약 경로를 직접 입력해주세요" style="padding:12px; font-size:14px; display:none; margin-top:8px;">
                 </div>
             </div>
+            <!-- ▲▲▲ 5번 문항: 수정된 부분 끝 ▲▲▲ -->
 
             <div class="form-group">
                 <label>6. 바운드짐을 어떻게 알게 되셨나요?</label>
@@ -331,33 +314,33 @@
                 <label>7. 관심 있는 상품은 무엇인가요?</label>
                 <div class="radio-grid">
                     <div class="selectable-box">
-                        <input type="radio" name="product" value="일반 헬스 회원권" required>
+                        <input type="radio" name="product" value="헬스" required>
                         <span class="box-label">🏋️‍♂️ 일반 헬스 회원권</span>
                     </div>
                     <div class="selectable-box">
-                        <input type="radio" name="product" value="1:1 개인 PT 상담">
+                        <input type="radio" name="product" value="PT">
                         <span class="box-label">💪 1:1 개인 PT 상담</span>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>8. 주로 운동하실 시간대는 언제인가요?</label>
+                <label>8. 주로 운동하실 시간대는 언제인가요?</label> <!-- 문항 번호 6 -> 8 로 수정 (자연스러운 순서를 위해) -->
                 <div class="time-grid">
                     <div class="selectable-box">
-                        <input type="radio" name="workoutTime" value="새벽/아침 (06시~09시)" required>
+                        <input type="radio" name="workoutTime" value="06시~09시" required>
                         <span class="box-label">🌅 새벽/아침 (06시~09시)</span>
                     </div>
                     <div class="selectable-box">
-                        <input type="radio" name="workoutTime" value="낮 시간대 (09시~18시)">
+                        <input type="radio" name="workoutTime" value="09시~18시">
                         <span class="box-label">☀️ 낮 시간대 (09시~18시)</span>
                     </div>
                     <div class="selectable-box">
-                        <input type="radio" name="workoutTime" value="저녁 피크 (18시~22시)">
+                        <input type="radio" name="workoutTime" value="18시~22시">
                         <span class="box-label">🌙 저녁 피크 (18시~22시)</span>
                     </div>
                     <div class="selectable-box">
-                        <input type="radio" name="workoutTime" value="심야 시간 (23시~24시)">
+                        <input type="radio" name="workoutTime" value="23시~24시">
                         <span class="box-label">🌌 심야 시간 (23시~24시)</span>
                     </div>
                 </div>
@@ -384,82 +367,18 @@
     </div>
 
     <script>
-        // [★ 주의] 아래 주소에 1단계에서 새로 발급받은 '구글 웹 앱 URL'을 넣어주세요.
-        const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxWUJ1E7wxhTbvbGnUxj4vC20hUrdkSE_--qGaykRpMShEFs9U3qdj1PrK3PyXm1Qos/exec";
+        // 대표님이 보내주신 마법의 구글 주소 연결
+        const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzijAicCzoXJuTbhfMzy0zxDKeYsK_RnBAFkIJWEcvZCVsfZKaUy5cGkV_kqI77JtM7/exec";
 
-        // 5번 문항: 인터랙션 제어
-        function toggleConsultInput(type) {
-            const newBox = document.getElementById('newConsultBox');
-            const reBox = document.getElementById('reConsultBox');
-            const newTypes = document.getElementsByName('newType');
-            const rePaths = document.getElementsByName('rePath');
-            
-            if (type === 'new') {
-                newBox.style.display = 'block'; reBox.style.display = 'none';
-                newTypes.forEach(r => r.required = true);
-                rePaths.forEach(r => { r.required = false; r.checked = false; });
-                document.getElementById('reEtcInput').style.display = 'none';
-                document.getElementById('reEtcInput').value = '';
-            } else if (type === 're') {
-                newBox.style.display = 'none'; reBox.style.display = 'block';
-                newTypes.forEach(r => { r.required = false; r.checked = false; });
-                rePaths.forEach(r => r.required = true);
-                toggleNewReserveInput(false);
-            } else {
-                newBox.style.display = 'none'; reBox.style.display = 'none';
-                newTypes.forEach(r => { r.required = false; r.checked = false; });
-                rePaths.forEach(r => { r.required = false; r.checked = false; });
-                toggleNewReserveInput(false);
-                document.getElementById('reEtcInput').style.display = 'none';
-                document.getElementById('reEtcInput').value = '';
-            }
-        }
-
-        function toggleNewReserveInput(show) {
-            const detailBox = document.getElementById('newReserveDetailBox');
-            const reservePaths = document.getElementsByName('newReservePath');
-            const etcInput = document.getElementById('newReserveEtcInput');
-            
-            if (show) {
-                detailBox.style.display = 'block';
-                reservePaths.forEach(r => r.required = true);
-            } else {
-                detailBox.style.display = 'none';
-                reservePaths.forEach(r => { r.checked = false; r.required = false; });
-                etcInput.style.display = 'none'; etcInput.value = '';
-            }
-        }
-
-        // 5번 기타 입력창 제어 활성화
-        document.querySelectorAll('input[name="newReservePath"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const etcInput = document.getElementById('newReserveEtcInput');
-                if (this.id === 'newReserveEtcRadio' && this.checked) {
-                    etcInput.style.display = 'block'; etcInput.focus();
-                } else {
-                    etcInput.style.display = 'none'; etcInput.value = '';
-                }
-            });
-        });
-
-        document.querySelectorAll('input[name="rePath"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const etcInput = document.getElementById('reEtcInput');
-                if (this.id === 'reEtcRadio' && this.checked) {
-                    etcInput.style.display = 'block'; etcInput.focus();
-                } else {
-                    etcInput.style.display = 'none'; etcInput.value = '';
-                }
-            });
-        });
-
-        // 6번 문항: 인터넷 검색 제어
+        // 기존 6번(검색 경로) 스크립트 
         function toggleSearchInput(show) {
             const detailBox = document.getElementById('searchDetailBox');
-            if(show) { detailBox.style.display = 'block'; } 
-            else {
+            if(show) {
+                detailBox.style.display = 'block';
+            } else {
                 detailBox.style.display = 'none';
-                document.getElementsByName('searchKeyword').forEach(r => r.checked = false);
+                const radios = document.getElementsByName('searchKeyword');
+                radios.forEach(r => r.checked = false);
                 document.getElementById('etcInput').style.display = 'none';
                 document.getElementById('etcInput').value = '';
             }
@@ -469,84 +388,90 @@
             radio.addEventListener('change', function() {
                 const etcInput = document.getElementById('etcInput');
                 if(this.id === 'etcRadio' && this.checked) {
-                    etcInput.style.display = 'block'; etcInput.focus();
+                    etcInput.style.display = 'block';
+                    etcInput.focus();
                 } else {
-                    etcInput.style.display = 'none'; etcInput.value = '';
+                    etcInput.style.display = 'none';
+                    etcInput.value = '';
                 }
             });
         });
 
-        // 폼 제출 마법 로직 (G열 데이터 자체 조립 기술 적용)
+        // ▼▼▼ 새롭게 추가된 5번(예약 경로) 관련 스크립트 ▼▼▼
+        function toggleReservation(show) {
+            const pathBox = document.getElementById('reservationPathBox');
+            if(show) {
+                pathBox.style.display = 'block';
+            } else {
+                pathBox.style.display = 'none';
+                const radios = document.getElementsByName('reservePath');
+                radios.forEach(r => r.checked = false);
+                document.getElementById('reserveEtcInput').style.display = 'none';
+                document.getElementById('reserveEtcInput').value = '';
+            }
+        }
+
+        document.querySelectorAll('input[name="reservePath"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const reserveEtcInput = document.getElementById('reserveEtcInput');
+                if(this.id === 'reserveEtcRadio' && this.checked) {
+                    reserveEtcInput.style.display = 'block';
+                    reserveEtcInput.focus();
+                } else {
+                    reserveEtcInput.style.display = 'none';
+                    reserveEtcInput.value = '';
+                }
+            });
+        });
+        // ▲▲▲ 추가 완료 ▲▲▲
+
+        // 폼 제출 시 구글 시트로 연동하는 대망의 코드
         document.getElementById('visitForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // 기본 새로고침 방지
 
             const overlay = document.getElementById('statusOverlay');
             const loadingState = document.getElementById('loadingState');
             const successState = document.getElementById('successState');
 
+            // 1. 로딩 화면 띄우기
             overlay.style.display = 'flex';
             loadingState.style.display = 'block';
             successState.style.display = 'none';
 
-            // G열 데이터 스마트 조립 파트
-            let finalDetailPath = "";
-            const consultType = document.querySelector('input[name="consultType"]:checked').value;
-            
-            if (consultType === "신규상담") {
-                const newType = document.querySelector('input[name="newType"]:checked').value;
-                if (newType === "미예약방문") {
-                    finalDetailPath = "워크인";
-                } else if (newType === "예약방문") {
-                    const checkedReserve = document.querySelector('input[name="newReservePath"]:checked');
-                    if (checkedReserve) {
-                        if (checkedReserve.id === 'newReserveEtcRadio') {
-                            finalDetailPath = document.getElementById('newReserveEtcInput').value || "기타 예약";
-                        } else {
-                            finalDetailPath = checkedReserve.value;
-                        }
-                    }
-                }
-            } else if (consultType === "재등록상담") {
-                const checkedRe = document.querySelector('input[name="rePath"]:checked');
-                if (checkedRe) {
-                    if (checkedRe.id === 'reEtcRadio') {
-                        finalDetailPath = document.getElementById('reEtcInput').value || "기타 재등록";
-                    } else {
-                        finalDetailPath = checkedRe.value;
-                    }
-                }
-            }
-
+            // 2. 고객이 입력한 데이터 모으기
             const formData = new FormData(this);
-            formData.append('detailPath', finalDetailPath); // G열용 파라미터 강제 주입
-
             const searchParams = new URLSearchParams(formData);
 
+            // 3. 구글 앱스 스크립트로 전송하기
             fetch(GOOGLE_API_URL, {
                 method: 'POST',
                 body: searchParams,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
+                    // 4. 전송 성공 시 완료 축하 화면으로 전환!
                     loadingState.style.display = 'none';
                     successState.style.display = 'block';
                     
+                    // 5초 뒤에 다음 고객을 위해 화면 원상복구
                     setTimeout(() => {
                         overlay.style.display = 'none';
                         document.getElementById('visitForm').reset();
                         toggleSearchInput(false);
-                        toggleConsultInput('hideAll');
-                    }, 4000); // 4초 뒤 초기화 후 첫 화면으로 이동
+                        toggleReservation(false); // 폼 리셋 시 새로 만든 5번 숨김처리
+                    }, 5000);
                 } else {
-                    alert('저장 오류 발생! 직원에게 문의하세요. 에러내용: ' + data.error);
+                    alert('저장 중 오류가 발생했습니다. 직원에게 문의해주세요. 에러: ' + data.error);
                     overlay.style.display = 'none';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('네트워크 연결이 불안정합니다. 인터넷을 확인해 주세요.');
+                alert('네트워크 연결 확인이 필요합니다.');
                 overlay.style.display = 'none';
             });
         });
