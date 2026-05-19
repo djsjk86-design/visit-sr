@@ -238,7 +238,7 @@
 
             <div class="form-group">
                 <label for="userPhone">4. 연락처를 입력해 주세요</label>
-                <input type="tel" id="userPhone" name="userPhone" class="input-control" placeholder="010-1234-5678" required>
+                <input type="tel" id="userPhone" name="userPhone" class="input-control" placeholder="010-1234-5678" maxlength="13" required>
             </div>
 
             <!-- ▼▼▼ 5번 문항: 수정된 부분 ▼▼▼ -->
@@ -369,7 +369,25 @@
     <script>
         // 대표님이 보내주신 마법의 구글 주소 연결
         const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzijAicCzoXJuTbhfMzy0zxDKeYsK_RnBAFkIJWEcvZCVsfZKaUy5cGkV_kqI77JtM7/exec";
+// ▼▼▼ 4번 문항: 연락처 자동 하이픈(-) 스크립트 ▼▼▼
+        document.getElementById('userPhone').addEventListener('input', function (e) {
+            // 1. 입력된 값에서 숫자만 쏙 골라냅니다.
+            let number = e.target.value.replace(/[^0-9]/g, '');
+            let phone = '';
 
+            // 2. 숫자가 길어질 때마다 알맞은 위치에 하이픈(-)을 찰칵! 끼워 넣습니다.
+            if (number.length < 4) {
+                phone = number;
+            } else if (number.length < 8) {
+                phone = number.substr(0, 3) + '-' + number.substr(3);
+            } else {
+                phone = number.substr(0, 3) + '-' + number.substr(3, 4) + '-' + number.substr(7);
+            }
+
+            // 3. 예쁘게 완성된 번호를 화면에 다시 띄워줍니다.
+            e.target.value = phone;
+        });
+        // ▲▲▲ 연락처 스크립트 끝 ▲▲▲
         // 기존 6번(검색 경로) 스크립트 
         function toggleSearchInput(show) {
             const detailBox = document.getElementById('searchDetailBox');
